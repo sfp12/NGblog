@@ -102,12 +102,12 @@ Post.remove = function(id, callback) {
 };
 
 //文章修改
-Post.update = function(id, title, content, callback) {
+Post.update = function(id, title, content, markdown, callback) {
   //连接pool
   pool.getConnection(function(err, connect) {
     //发生错误，回调错误
     if(err) return callback(err.stack);
-    connect.query('UPDATE `posts` SET post_title = ?, post_content = ? WHERE ID = ?', [id, title, content], function(err) {
+    connect.query('UPDATE `posts` SET post_title = ?, post_content = ?, post_markdown = ? WHERE ID = ?', [title, content, markdown, id], function(err) {
       //释放连接
       connect.release();
       //发生错误，回调错误
@@ -117,25 +117,3 @@ Post.update = function(id, title, content, callback) {
     });
   });
 };
-
-
-/*
-Post.findOne =  function(data, callback) {
-  var findTen = 'SELECT * FROM `posts` ORDER BY post_date desc, ID desc LIMIT ?, ?';
-  var findOne = 'SELECT * FROM `posts` WHERE ID = ?';
-  //判定传入的数据是否为数组
-  var find = data instanceof Array ? findTen : findOne;
-  //连接poll
-  pool.getConnection(function(err, connect){
-    if(err) return callback(err.stack;
-    //从数据库读取数据
-    connect.query(find, data, function(err, result) {
-      //发生错误，回调错误
-      if(err) return callback(err.stack;
-      //释放连接
-      connect.release();
-      //回调数据，无错误
-      return callback(null, result);
-    })
-  })
-}*/

@@ -2,11 +2,11 @@
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
 <div class="article">
-    <% post.forEach(function(value, index) { %>
-    <a href="/post/<%= value.ID %>" ><h2 class="title"><%= value.post_title %></h2></a>
-    <p class="content"><%= value.post_content.substring(0,20).replace(/<\/?[^>]*>/g,'') %>...</p>
-    <span class="time"><%= value.post_date %></span>
-    <% if (user) { %><a href="/post/edit/<%= value.ID %>">编辑</a><a href="/post/remove/<%= value.ID %>">删除</a><% } %>
+    <% posts.forEach(function(post, index) { %>
+    <a href="/post/<%= post.ID %>" ><h2 class="title"><%= post.post_title %></h2></a>
+    <p class="content"><%= post.post_content.substring(0,20).replace(/<\/?[^>]*>/g,'') %>...</p>
+    <span class="time"><%= post.post_date %></span>
+    <% if (user) { %><a href="/post/edit/<%= post.ID %>">编辑</a><a href="/post/remove/<%= post.ID %>">删除</a><% } %>
     <% }) %>
 </div>
 <% include footer.ejs %>

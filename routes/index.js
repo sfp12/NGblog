@@ -4,7 +4,7 @@ var router = express.Router();
 var crypto = require('crypto');
 var Post = require('../models/post.js');
 
-var markdown = require('markdown').markdown;
+var markdownMode = require('markdown').markdown;
 
 //主页
 router.get('/', function(req, res, next) {
@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
       user: req.session.user,
       success: req.flash('success').toString(),
       error: req.flash('error').toString(),
-      post: result
+      posts: result
     });
   });
 });
@@ -28,7 +28,7 @@ router.get('/page/:id(\\d{1,3})', function(req, res, next) {
         user: req.session.user,
         success: req.flash('success').toString(),
         error: req.flash('error').toString(),
-        post: result
+        posts: result
       });
     }else{
       res.status(404);
@@ -70,7 +70,7 @@ router.get('/post/new', function(req, res, next) {
 //文章发布
 router.post('/post/new', checkLogin);
 router.post('/post/new', function(req, res) {
-  var content = markdown.toHTML(req.body.content);
+  var content = markdownMode.toHTML(req.body.content);
   var post = new Post(req.body.title, content, req.body.content);
   post.save(function(err) {
     if(err) {
@@ -101,7 +101,30 @@ router.get('/post/edit/:id(\\d{1,10})', checkLogin);
 router.get('/post/edit/:id(\\d{1,10})', function (req, res, next) {
   var id = req.params.id;
   Post.getOne(id, function(err, result) {
+    res.render('edit', {
+      title: result[0].post_title,
+      user: req.session.user,
+      success: req.flash('success').toString(),
+      error: req.flash('error').toString(),
+      post: result
+    });
+  });
+});
 
+//文章编辑页发布
+router.post('/post/edit/:id(\\d{1,10})', checkLogin);
+router.post('/post/edit/:id(\\d{1,10})', function(req, res) {
+  var id = req.params.id,
+    title = req.body.title,
+    markdown = req.body.content,
+    content = markdownMode.toHTML(markdown);
+  Post.update(id, title, content, markdown, function(err) {
+    if(err) {
+      req.flash('error', err);
+      return res.redirect('back');
+    }
+    req.flash('success', '修改成功');
+    res.redirect('/');
   })
 });
 
